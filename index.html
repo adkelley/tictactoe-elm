@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="tictactoe.js"></script>
+  </head>
+  <body>
+    <h1>Tic-Tac-Toe</h1>
+    <p>The Tic-Tac-Toe board below is an embedded Elm program.  The rest is HTML.</p>
+    <div id="elm-board"></div>
+    <div id="footer"></div>
+  </body>
+  <script type="text/javascript">
+    var elmDiv = document.getElementById( 'elm-board' );
+    Elm.embed( Elm.TicTacToe, elmDiv );
+  </script>
+</html>

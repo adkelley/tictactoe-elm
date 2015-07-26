@@ -1,4 +1,4 @@
-// Replace Filename with the name of your
+// Replace Tictactoe with the name of your
 // application file
 
 module.exports = function(grunt) {
@@ -7,14 +7,31 @@ module.exports = function(grunt) {
     elm: {
       compile: {
         files: {
-          "filename.js": ["Filename.elm"]
+          "tictactoe.js": ["TicTacToe.elm"]
+        }
+      }
+    },
+    jade: {
+      compile: {
+        options: {
+          pretty: true,
+          data: {
+            debug: false
+          }
+        },
+        files: {
+          "index.html": "./jade/index.jade"
         }
       }
     },
     watch: {
       elm: {
-        files: ["Filename.elm", "FilenameUtils.elm"],
+        files: ["TicTacToe.elm"],
         tasks: ["elm"]
+      },
+      jade: { 
+        files: [ "./jade/index.jade" ],
+        tasks: [ "jade" ]
       }
     },
     clean: ["elm-stuff/build-artifacts"]
@@ -23,7 +40,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-elm');
+  grunt.loadNpmTasks( 'grunt-contrib-jade' );
 
-  grunt.registerTask('default', ['elm']);
+  grunt.registerTask('default', ['elm', 'jade']);
 
 };

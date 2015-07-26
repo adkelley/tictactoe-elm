@@ -1,0 +1,14 @@
+doctype html
+html( lang='en' )
+  head
+    title Tic-Tac-Toe
+    link( rel="stylesheet", href="style.css" )
+    script( type='text/javascript', src='tictactoe.js' )
+  body
+    h1 Tic-Tac-Toe
+    p The Tic-Tac-Toe board below is an embedded Elm program.  The rest is HTML.
+    #elm-board
+    #footer
+  script( type='text/javascript' ).
+    var elmDiv = document.getElementById( 'elm-board' );
+    Elm.embed( Elm.TicTacToe, elmDiv );
