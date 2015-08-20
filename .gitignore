@@ -1,4 +1,8 @@
-elm-stuff
 node_modules
 npm-debug.log
-tictactoe.js
+
+# compiled elm file
+elm-stuff
+
+# you may need to change this name
+elm.js

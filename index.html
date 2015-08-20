@@ -3,16 +3,10 @@
   <head>
     <title>Tic-Tac-Toe</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Raleway:400,500,600" type="text/css">
     <script type="text/javascript" src="tictactoe.js"></script>
   </head>
   <body>
-    <h1>Tic-Tac-Toe</h1>
-    <p>The Tic-Tac-Toe board below is an embedded Elm program.  The rest is HTML.</p>
-    <div id="elm-board"></div>
-    <div id="footer"></div>
+    <script>var app = Elm.fullscreen( Elm.TicTacToe )</script>
   </body>
-  <script type="text/javascript">
-    var elmDiv = document.getElementById( 'elm-board' );
-    Elm.embed( Elm.TicTacToe, elmDiv );
-  </script>
 </html>
