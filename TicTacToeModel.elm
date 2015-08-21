@@ -48,20 +48,28 @@ initModel =
     state = UnFinishedGame Blank (Array.repeat 9 Blank)
   }
 
+inc : Int -> Int
+inc i =
+  ((+) i 1)
+
 updateScores : Result -> Scores -> Scores
 updateScores result scores =
   case result of
     Winner X ->
-      { scores | cross <- scores.cross + 1 }
+      { scores | cross <- (inc scores.cross) }
     Winner O ->
-      { scores | nought <- scores.nought + 1 }
+      { scores | nought <- (inc scores.nought) }
     Draw ->
-      { scores | ties <- scores.ties + 1 }
+      { scores | ties <- (inc scores.ties) }
 
 
 isDraw : Board -> Maybe Result
 isDraw board =
-    if (== (Array.length board) 9) then Just Draw else Nothing
+    let occupied =
+          Array.length (Array.filter (\e -> ((||) ((==) e X)) ((==) e O))  board)
+    in
+      if | occupied == 9 -> Just Draw
+         | otherwise -> Nothing
 
 -- threeInRow : Board -> Player -> Player
 -- threeInRow board =
@@ -78,10 +86,14 @@ isWinner model =
   let
     state = (.state model)
     board = getBoard state
-    result = 
-    draw = draw board
+    draw : Maybe Result
+    draw = isDraw board
   in
-    { model | scores <- (updateScores (Winner X) (.scores model)) }
+    case draw of
+      Just Draw -> 
+        { model | scores <- (updateScores Draw (.scores model)) }
+      Nothing ->
+        model
 
 
 -- Todo: use random to pick a who goes first at

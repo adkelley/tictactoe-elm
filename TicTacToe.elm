@@ -100,8 +100,8 @@ renderScores : Scores -> Html
 renderScores scores =
   div [ id "score" ]
       [ ul [  ]
-         [ renderScore scores.ties
-         , renderScore scores.nought
+         [ renderScore scores.nought
+         , renderScore scores.ties
          , renderScore scores.cross
          ]
       ]

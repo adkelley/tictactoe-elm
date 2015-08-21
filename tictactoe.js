@@ -13046,8 +13046,8 @@ Elm.TicTacToe.make = function (_elm) {
       _L.fromArray([$Html$Attributes.id("score")]),
       _L.fromArray([A2($Html.ul,
       _L.fromArray([]),
-      _L.fromArray([renderScore(scores.ties)
-                   ,renderScore(scores.nought)
+      _L.fromArray([renderScore(scores.nought)
+                   ,renderScore(scores.ties)
                    ,renderScore(scores.cross)]))]));
    };
    var renderScorePanel = function (model) {
@@ -13242,8 +13242,15 @@ Elm.TicTacToeModel.make = function (_elm) {
             case "UnFinishedGame":
             return state._1;}
          _U.badCase($moduleName,
-         "between lines 90 and 92");
+         "between lines 122 and 124");
       }();
+   };
+   var inc = function (i) {
+      return A2(F2(function (x,y) {
+         return x + y;
+      }),
+      i,
+      1);
    };
    var updateScores = F2(function (result,
    scores) {
@@ -13251,21 +13258,21 @@ Elm.TicTacToeModel.make = function (_elm) {
          switch (result.ctor)
          {case "Draw":
             return _U.replace([["ties"
-                               ,scores.ties + 1]],
+                               ,inc(scores.ties)]],
               scores);
             case "Winner":
             switch (result._0.ctor)
               {case "O":
                  return _U.replace([["nought"
-                                    ,scores.nought + 1]],
+                                    ,inc(scores.nought)]],
                    scores);
                  case "X":
                  return _U.replace([["cross"
-                                    ,scores.cross + 1]],
+                                    ,inc(scores.cross)]],
                    scores);}
               break;}
          _U.badCase($moduleName,
-         "between lines 53 and 59");
+         "between lines 57 and 63");
       }();
    });
    var initScores = {_: {}
@@ -13309,16 +13316,56 @@ Elm.TicTacToeModel.make = function (_elm) {
                    Blank,
                    A2($Array.repeat,9,Blank))};
    var X = {ctor: "X"};
-   var isWinner = function (model) {
-      return _U.replace([["scores"
-                         ,A2(updateScores,
-                         Winner(X),
-                         function (_) {
-                            return _.scores;
-                         }(model))]],
-      model);
-   };
    var O = {ctor: "O"};
+   var isDraw = function (board) {
+      return function () {
+         var occupied = $Array.length(A2($Array.filter,
+         function (e) {
+            return A2(F2(function (x,y) {
+               return x || y;
+            }),
+            A2(F2(function (x,y) {
+               return _U.eq(x,y);
+            }),
+            e,
+            X),
+            A2(F2(function (x,y) {
+               return _U.eq(x,y);
+            }),
+            e,
+            O));
+         },
+         board));
+         return _U.eq(occupied,
+         9) ? $Maybe.Just(Draw) : $Maybe.Nothing;
+      }();
+   };
+   var isWinner = function (model) {
+      return function () {
+         var state = function (_) {
+            return _.state;
+         }(model);
+         var board = getBoard(state);
+         var draw = isDraw(board);
+         return function () {
+            switch (draw.ctor)
+            {case "Just":
+               switch (draw._0.ctor)
+                 {case "Draw":
+                    return _U.replace([["scores"
+                                       ,A2(updateScores,
+                                       Draw,
+                                       function (_) {
+                                          return _.scores;
+                                       }(model))]],
+                      model);}
+                 break;
+               case "Nothing": return model;}
+            _U.badCase($moduleName,
+            "between lines 92 and 96");
+         }();
+      }();
+   };
    var whoseTurn = function (state) {
       return function () {
          switch (state.ctor)
@@ -13338,7 +13385,7 @@ Elm.TicTacToeModel.make = function (_elm) {
                  case "X": return X;}
               break;}
          _U.badCase($moduleName,
-         "between lines 71 and 78");
+         "between lines 103 and 110");
       }();
    };
    var otherPlayer = function (player) {
@@ -13347,7 +13394,7 @@ Elm.TicTacToeModel.make = function (_elm) {
          {case "O": return X;
             case "X": return O;}
          _U.badCase($moduleName,
-         "between lines 83 and 85");
+         "between lines 115 and 117");
       }();
    };
    _elm.TicTacToeModel.values = {_op: _op
@@ -13362,7 +13409,9 @@ Elm.TicTacToeModel.make = function (_elm) {
                                 ,Model: Model
                                 ,initScores: initScores
                                 ,initModel: initModel
+                                ,inc: inc
                                 ,updateScores: updateScores
+                                ,isDraw: isDraw
                                 ,isWinner: isWinner
                                 ,whoseTurn: whoseTurn
                                 ,otherPlayer: otherPlayer
