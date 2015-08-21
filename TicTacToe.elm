@@ -1,21 +1,26 @@
 module TicTacToe where
 
-import TicTacToeModel exposing ( .. )
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
 import String exposing ( toUpper )
+import Array exposing (Array, get, set, repeat)
 
 import Random exposing ( int )
+import Debug exposing (..)
+import Result exposing (toMaybe)
 
 import Signal exposing ( Address )
 import StartApp
+
+import TicTacToeModel exposing ( .. )
 
 -- Update
 type Action
   = NoOp
   | Reset
+  | ToggleSquare Field
 
 
 update : Action -> Model -> Model
@@ -25,17 +30,24 @@ update action model =
       model
       
     Reset ->
-      resetGame model
+      initModel
 
---     -- Todo: Maybe needed if user does something wrong
---     ToggleSquare id ->
---       let updateSquare ( player, id' ) =
---             if ( ( id' == id ) && ( square == empty ) ) then ( model.turn, id ) else ( player, id )
---       in
--- --        { model | board <- List.map updateSquare model.board, turn <- whoseTurn model.turn }
---           { model | turn <- whoseTurn model.turn, board <- List.map updateSquare model.board }
---|> isWinner
-
+    ToggleSquare id ->
+      let state = (.state model)
+          player = whoseTurn state
+          board = getBoard state
+          square = Array.get id board
+          nextPlayer = otherPlayer player
+          newBoard = Array.set id player (getBoard state)
+      in
+        if square == Just Blank then
+          Debug.log "ToggleSquare"
+                 { model | state <- (UnFinishedGame nextPlayer newBoard) }
+                 |> isWinner
+        else
+          Debug.log "ToggleSquare"
+                 model
+          
 
 -- View
 title : String -> Html
@@ -50,28 +62,32 @@ pageHeader =
   h1 [ id "header" ] [ title "tic-tac-toe" ]
 
 
--- square : Address Action -> ( Player, Id ) -> Html
--- square address ( player, id ) = 
---   div [ class "square"
---       , onClick address ( ToggleSquare id )
---       ]
---       [  p [ class ( case player of
---                        O  -> "nought"
---                        X  -> "cross"
---                        otherwise  -> "empty" )
---            ]
---          [ text ( case player of
---                     O -> "O"
---                     X -> "X"
---                     otherwise -> " "
---                 )
---          ]
---       ]
-      
 
--- gameBoard : Address Action -> Moves -> Html
--- gameBoard address moves =
---   div [ id "board"  ] ( List.map ( square address ) board )
+renderSquare : Address Action -> Model -> Field -> Html
+renderSquare address model field = 
+  let
+    state = (.state model)
+    square = Array.get field (getBoard state)
+  in
+    div [ id (toString field), class "square"
+        , onClick address ( ToggleSquare field  )
+        ]
+    [ p [ class ( case square of
+                    Just O  -> "nought"
+                    Just X  -> "cross"
+                    Just Blank  -> "empty" )
+        ]
+      [ text ( case square of
+                 Just O -> "O"
+                 Just X -> "X"
+                 Just Blank -> " " )
+      ]
+    ]
+
+
+renderGameBoard : Address Action -> Model -> Html
+renderGameBoard address model =
+  div [ id "board"  ] (List.map  (renderSquare address model ) [0..8])
 
 
 renderScore : Int -> Html
@@ -90,20 +106,21 @@ renderScores scores =
          ]
       ]
     
+
 panelLabel : String -> String -> String -> Html
 panelLabel id' class' label =
   div [ id id' ] [ h2 [ class class'  ] [ text label ] ]
+
 
 blinkClass : Player -> Player -> String
 blinkClass player turn =
    if ( player == turn ) then "blink" else "no-blink"
 
-scorePanel : Model -> Html
-scorePanel model  =
+
+renderScorePanel : Model -> Html
+renderScorePanel model  =
   let scores = (.scores model)
-      player = case (.state model) of
-                 NotFinishedGame X _ -> X
-                 NotFinishedGame O _ -> O
+      player = whoseTurn (.state model)
   in
     div [ id "panel" ]
           [ panelLabel "nought" ( blinkClass O player) "O"
@@ -112,6 +129,7 @@ scorePanel model  =
           , renderScores scores
           ]
 
+
 pageFooter : Html
 pageFooter =
   footer [ id "footer"  ]
@@ -119,21 +137,23 @@ pageFooter =
         [ text "view github repository" ]
     ]
     
+
 view : Address Action -> Model -> Html
 view address model =
   div [ id "container" ]
         [ pageHeader
-        -- , ( gameBoard  address ( .board model ) )
-        , scorePanel model
+        , renderGameBoard  address model
+        , renderScorePanel model
         , button
           [ id "reset", onClick address Reset ] [ text "Reset" ]
         , pageFooter
         ]
     
+
 main =
   StartApp.start
   {
-    model = initialModel,
+    model = initModel,
     view = view,
     update = update
   }

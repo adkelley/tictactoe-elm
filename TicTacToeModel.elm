@@ -2,16 +2,16 @@
 
 module TicTacToeModel where
 
-import List exposing (..)
+import Array exposing (Array, get, set, repeat, length)
 
 -- Model
-type Player = O | X
+type Player = O | X | Blank
 
-type alias Field = {  row: Int, col: Int }
+type alias Field = Int
 
-type alias Move = ( Field, Player )
+type alias Move = Player
 
-type alias Moves = List Move
+type alias Board = Array Move
 
 type Result = Draw | Winner Player
             
@@ -23,8 +23,8 @@ type alias Scores =
   }
 
 type GameState = 
-    FinishedGame Result Moves
-    | NotFinishedGame Player Moves
+    FinishedGame Result Board
+    | UnFinishedGame Player Board
      
 
 type alias Model =
@@ -41,11 +41,11 @@ initScores =
     cross = 0
   }
 
-initialModel : Model
-initialModel =
+initModel : Model
+initModel =
   {
     scores = initScores,
-    state = NotFinishedGame X [  ]
+    state = UnFinishedGame Blank (Array.repeat 9 Blank)
   }
 
 updateScores : Result -> Scores -> Scores
@@ -59,6 +59,45 @@ updateScores result scores =
       { scores | ties <- scores.ties + 1 }
 
 
+isDraw : Board -> Maybe Result
+isDraw board =
+    if (== (Array.length board) 9) then Just Draw else Nothing
+
+-- threeInRow : Board -> Player -> Player
+-- threeInRow board =
+--   let row = List.take 3 (Array.toList board)
+--   in
+--     case row of
+--       Empty ->
+--         Player
+      
+--     threeInRow row X
+
+isWinner : Model -> Model
+isWinner model =
+  let
+    state = (.state model)
+    board = getBoard state
+    result = 
+    draw = draw board
+  in
+    { model | scores <- (updateScores (Winner X) (.scores model)) }
+
+
+-- Todo: use random to pick a who goes first at
+-- upon resetting the game (i.e., player == Blank)
+whoseTurn : GameState -> Player
+whoseTurn state =
+  case state of
+    (UnFinishedGame X _) -> X
+    (UnFinishedGame O _) -> O
+    (UnFinishedGame Blank _) -> X
+    (FinishedGame (Winner X) _) -> X
+    (FinishedGame (Winner O) _) -> O
+    (FinishedGame Draw _) -> X
+                            
+
+
 otherPlayer : Player -> Player
 otherPlayer player =
    case player of 
@@ -66,16 +105,11 @@ otherPlayer player =
      O -> X
 
 
--- Todo how can I alternate players?
-resetGame : Model -> Model
-resetGame model =
-  {
-    scores = initScores,
-    state = case (.state model) of
-              FinishedGame (Winner X) _ -> NotFinishedGame O []
-              FinishedGame (Winner O) _ -> NotFinishedGame X []
-              FinishedGame Draw _ -> NotFinishedGame X []
-              NotFinishedGame X _ -> NotFinishedGame O []
-              NotFinishedGame O _ -> NotFinishedGame X []
-  }
+getBoard : GameState -> Board
+getBoard state =
+  case state of
+    (UnFinishedGame _ board) -> board
+    (FinishedGame _ board) -> board
+
+
 

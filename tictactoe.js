@@ -13004,7 +13004,9 @@ Elm.TicTacToe.make = function (_elm) {
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
    $moduleName = "TicTacToe",
+   $Array = Elm.Array.make(_elm),
    $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
    $Html$Events = Elm.Html.Events.make(_elm),
@@ -13048,23 +13050,11 @@ Elm.TicTacToe.make = function (_elm) {
                    ,renderScore(scores.nought)
                    ,renderScore(scores.cross)]))]));
    };
-   var scorePanel = function (model) {
+   var renderScorePanel = function (model) {
       return function () {
-         var player = function () {
-            var _v0 = function (_) {
-               return _.state;
-            }(model);
-            switch (_v0.ctor)
-            {case "NotFinishedGame":
-               switch (_v0._0.ctor)
-                 {case "O":
-                    return $TicTacToeModel.O;
-                    case "X":
-                    return $TicTacToeModel.X;}
-                 break;}
-            _U.badCase($moduleName,
-            "between lines 104 and 107");
-         }();
+         var player = $TicTacToeModel.whoseTurn(function (_) {
+            return _.state;
+         }(model));
          var scores = function (_) {
             return _.scores;
          }(model);
@@ -13101,10 +13091,89 @@ Elm.TicTacToe.make = function (_elm) {
          switch (action.ctor)
          {case "NoOp": return model;
             case "Reset":
-            return $TicTacToeModel.resetGame(model);}
+            return $TicTacToeModel.initModel;
+            case "ToggleSquare":
+            return function () {
+                 var state = function (_) {
+                    return _.state;
+                 }(model);
+                 var player = $TicTacToeModel.whoseTurn(state);
+                 var nextPlayer = $TicTacToeModel.otherPlayer(player);
+                 var board = $TicTacToeModel.getBoard(state);
+                 var square = A2($Array.get,
+                 action._0,
+                 board);
+                 var newBoard = A3($Array.set,
+                 action._0,
+                 player,
+                 $TicTacToeModel.getBoard(state));
+                 return _U.eq(square,
+                 $Maybe.Just($TicTacToeModel.Blank)) ? $TicTacToeModel.isWinner(A2($Debug.log,
+                 "ToggleSquare",
+                 _U.replace([["state"
+                             ,A2($TicTacToeModel.UnFinishedGame,
+                             nextPlayer,
+                             newBoard)]],
+                 model))) : A2($Debug.log,
+                 "ToggleSquare",
+                 model);
+              }();}
          _U.badCase($moduleName,
-         "between lines 23 and 28");
+         "between lines 28 and 50");
       }();
+   });
+   var ToggleSquare = function (a) {
+      return {ctor: "ToggleSquare"
+             ,_0: a};
+   };
+   var renderSquare = F3(function (address,
+   model,
+   field) {
+      return function () {
+         var state = function (_) {
+            return _.state;
+         }(model);
+         var square = A2($Array.get,
+         field,
+         $TicTacToeModel.getBoard(state));
+         return A2($Html.div,
+         _L.fromArray([$Html$Attributes.id($Basics.toString(field))
+                      ,$Html$Attributes.$class("square")
+                      ,A2($Html$Events.onClick,
+                      address,
+                      ToggleSquare(field))]),
+         _L.fromArray([A2($Html.p,
+         _L.fromArray([$Html$Attributes.$class(function () {
+            switch (square.ctor)
+            {case "Just":
+               switch (square._0.ctor)
+                 {case "Blank": return "empty";
+                    case "O": return "nought";
+                    case "X": return "cross";}
+                 break;}
+            _U.badCase($moduleName,
+            "between lines 75 and 78");
+         }())]),
+         _L.fromArray([$Html.text(function () {
+            switch (square.ctor)
+            {case "Just":
+               switch (square._0.ctor)
+                 {case "Blank": return " ";
+                    case "O": return "O";
+                    case "X": return "X";}
+                 break;}
+            _U.badCase($moduleName,
+            "between lines 80 and 83");
+         }())]))]));
+      }();
+   });
+   var renderGameBoard = F2(function (address,
+   model) {
+      return A2($Html.div,
+      _L.fromArray([$Html$Attributes.id("board")]),
+      A2($List.map,
+      A2(renderSquare,address,model),
+      _L.range(0,8)));
    });
    var Reset = {ctor: "Reset"};
    var view = F2(function (address,
@@ -13112,7 +13181,10 @@ Elm.TicTacToe.make = function (_elm) {
       return A2($Html.div,
       _L.fromArray([$Html$Attributes.id("container")]),
       _L.fromArray([pageHeader
-                   ,scorePanel(model)
+                   ,A2(renderGameBoard,
+                   address,
+                   model)
+                   ,renderScorePanel(model)
                    ,A2($Html.button,
                    _L.fromArray([$Html$Attributes.id("reset")
                                 ,A2($Html$Events.onClick,
@@ -13122,21 +13194,24 @@ Elm.TicTacToe.make = function (_elm) {
                    ,pageFooter]));
    });
    var main = $StartApp.start({_: {}
-                              ,model: $TicTacToeModel.initialModel
+                              ,model: $TicTacToeModel.initModel
                               ,update: update
                               ,view: view});
    var NoOp = {ctor: "NoOp"};
    _elm.TicTacToe.values = {_op: _op
                            ,NoOp: NoOp
                            ,Reset: Reset
+                           ,ToggleSquare: ToggleSquare
                            ,update: update
                            ,title: title
                            ,pageHeader: pageHeader
+                           ,renderSquare: renderSquare
+                           ,renderGameBoard: renderGameBoard
                            ,renderScore: renderScore
                            ,renderScores: renderScores
                            ,panelLabel: panelLabel
                            ,blinkClass: blinkClass
-                           ,scorePanel: scorePanel
+                           ,renderScorePanel: renderScorePanel
                            ,pageFooter: pageFooter
                            ,view: view
                            ,main: main};
@@ -13153,11 +13228,23 @@ Elm.TicTacToeModel.make = function (_elm) {
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
    $moduleName = "TicTacToeModel",
+   $Array = Elm.Array.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var getBoard = function (state) {
+      return function () {
+         switch (state.ctor)
+         {case "FinishedGame":
+            return state._1;
+            case "UnFinishedGame":
+            return state._1;}
+         _U.badCase($moduleName,
+         "between lines 90 and 92");
+      }();
+   };
    var updateScores = F2(function (result,
    scores) {
       return function () {
@@ -13190,9 +13277,9 @@ Elm.TicTacToeModel.make = function (_elm) {
              ,scores: a
              ,state: b};
    });
-   var NotFinishedGame = F2(function (a,
+   var UnFinishedGame = F2(function (a,
    b) {
-      return {ctor: "NotFinishedGame"
+      return {ctor: "UnFinishedGame"
              ,_0: a
              ,_1: b};
    });
@@ -13215,81 +13302,71 @@ Elm.TicTacToeModel.make = function (_elm) {
              ,_0: a};
    };
    var Draw = {ctor: "Draw"};
-   var Field = F2(function (a,b) {
-      return {_: {},col: b,row: a};
-   });
+   var Blank = {ctor: "Blank"};
+   var initModel = {_: {}
+                   ,scores: initScores
+                   ,state: A2(UnFinishedGame,
+                   Blank,
+                   A2($Array.repeat,9,Blank))};
    var X = {ctor: "X"};
-   var initialModel = {_: {}
-                      ,scores: initScores
-                      ,state: A2(NotFinishedGame,
-                      X,
-                      _L.fromArray([]))};
+   var isWinner = function (model) {
+      return _U.replace([["scores"
+                         ,A2(updateScores,
+                         Winner(X),
+                         function (_) {
+                            return _.scores;
+                         }(model))]],
+      model);
+   };
    var O = {ctor: "O"};
+   var whoseTurn = function (state) {
+      return function () {
+         switch (state.ctor)
+         {case "FinishedGame":
+            switch (state._0.ctor)
+              {case "Draw": return X;
+                 case "Winner":
+                 switch (state._0._0.ctor)
+                   {case "O": return O;
+                      case "X": return X;}
+                   break;}
+              break;
+            case "UnFinishedGame":
+            switch (state._0.ctor)
+              {case "Blank": return X;
+                 case "O": return O;
+                 case "X": return X;}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 71 and 78");
+      }();
+   };
    var otherPlayer = function (player) {
       return function () {
          switch (player.ctor)
          {case "O": return X;
             case "X": return O;}
          _U.badCase($moduleName,
-         "between lines 64 and 66");
+         "between lines 83 and 85");
       }();
-   };
-   var resetGame = function (model) {
-      return {_: {}
-             ,scores: initScores
-             ,state: function () {
-                var _v3 = function (_) {
-                   return _.state;
-                }(model);
-                switch (_v3.ctor)
-                {case "FinishedGame":
-                   switch (_v3._0.ctor)
-                     {case "Draw":
-                        return A2(NotFinishedGame,
-                          X,
-                          _L.fromArray([]));
-                        case "Winner":
-                        switch (_v3._0._0.ctor)
-                          {case "O":
-                             return A2(NotFinishedGame,
-                               X,
-                               _L.fromArray([]));
-                             case "X":
-                             return A2(NotFinishedGame,
-                               O,
-                               _L.fromArray([]));}
-                          break;}
-                     break;
-                   case "NotFinishedGame":
-                   switch (_v3._0.ctor)
-                     {case "O":
-                        return A2(NotFinishedGame,
-                          X,
-                          _L.fromArray([]));
-                        case "X":
-                        return A2(NotFinishedGame,
-                          O,
-                          _L.fromArray([]));}
-                     break;}
-                _U.badCase($moduleName,
-                "between lines 74 and 80");
-             }()};
    };
    _elm.TicTacToeModel.values = {_op: _op
                                 ,O: O
                                 ,X: X
-                                ,Field: Field
+                                ,Blank: Blank
                                 ,Draw: Draw
                                 ,Winner: Winner
                                 ,Scores: Scores
                                 ,FinishedGame: FinishedGame
-                                ,NotFinishedGame: NotFinishedGame
+                                ,UnFinishedGame: UnFinishedGame
                                 ,Model: Model
                                 ,initScores: initScores
-                                ,initialModel: initialModel
+                                ,initModel: initModel
                                 ,updateScores: updateScores
+                                ,isWinner: isWinner
+                                ,whoseTurn: whoseTurn
                                 ,otherPlayer: otherPlayer
-                                ,resetGame: resetGame};
+                                ,getBoard: getBoard};
    return _elm.TicTacToeModel.values;
 };
 Elm.Transform2D = Elm.Transform2D || {};
