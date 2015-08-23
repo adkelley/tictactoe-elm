@@ -5,22 +5,19 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
 import String exposing ( toUpper )
-import Array exposing (Array, get, set, repeat)
 
-import Random exposing ( int )
 import Debug exposing (..)
-import Result exposing (toMaybe)
 
 import Signal exposing ( Address )
 import StartApp
 
-import TicTacToeModel exposing ( .. )
+import TTModel exposing (..)
 
 -- Update
 type Action
   = NoOp
   | Reset
-  | ToggleSquare Field
+  | AddMove Position
 
 
 update : Action -> Model -> Model
@@ -30,23 +27,11 @@ update action model =
       model
       
     Reset ->
-      initModel
+      newModel
 
-    ToggleSquare id ->
-      let state = (.state model)
-          player = whoseTurn state
-          board = getBoard state
-          square = Array.get id board
-          nextPlayer = otherPlayer player
-          newBoard = Array.set id player (getBoard state)
-      in
-        if square == Just Blank then
-          Debug.log "ToggleSquare"
-                 { model | state <- (UnFinishedGame nextPlayer newBoard) }
-                 |> isWinner
-        else
-          Debug.log "ToggleSquare"
-                 model
+    AddMove position ->
+      addMove model (position, turn)
+      
           
 
 -- View
@@ -63,21 +48,18 @@ pageHeader =
 
 
 
-renderSquare : Address Action -> Model -> Field -> Html
-renderSquare address model field = 
-  let
-    state = (.state model)
-    square = Array.get field (getBoard state)
-  in
-    div [ id (toString field), class "square"
-        , onClick address ( ToggleSquare field  )
+renderSquare : Address Action -> Model -> (Position, Player) -> Html
+renderSquare address (position, player) =
+  let square = if 
+    div [ class "square"
+        , onClick address ( AddMove position  )
         ]
-    [ p [ class ( case square of
+    [ p [ class ( case  of
                     Just O  -> "nought"
                     Just X  -> "cross"
                     Just Blank  -> "empty" )
         ]
-      [ text ( case square of
+      [ text ( case move of
                  Just O -> "O"
                  Just X -> "X"
                  Just Blank -> " " )
@@ -87,22 +69,33 @@ renderSquare address model field =
 
 renderGameBoard : Address Action -> Model -> Html
 renderGameBoard address model =
-  div [ id "board"  ] (List.map  (renderSquare address model ) [0..8])
+  let board = getBoard (.state model)
+  div [ id "board"  ] 
 
 
-renderScore : Int -> Html
-renderScore score =
-  li [ ]
+blinkWinner : GameState -> String
+blinkWinner state =
+  let player = otherPlayer (whoseTurn state)
+  in
+   case state of
+     (FinishedGame (Winner X) _) -> if player == X then "blink" else "no-blink"
+     (FinishedGame (Winner O) _) -> if player == O then "blink" else "no-blink"
+     (FinishedGame Draw _) -> "blink"
+     otherwise -> "no-blink"
+
+renderScore : String -> Int -> Html
+renderScore blink score =
+  li [ class blink ]
      [ text ( toString score ) ]
 
 
-renderScores : Scores -> Html
-renderScores scores =
+renderScores : GameState -> Scores -> Html
+renderScores state scores =
   div [ id "score" ]
       [ ul [  ]
-         [ renderScore scores.nought
-         , renderScore scores.ties
-         , renderScore scores.cross
+         [ renderScore (blinkWinner state) scores.nought
+         , renderScore (blinkWinner state) scores.ties
+         , renderScore (blinkWinner state) scores.cross
          ]
       ]
     
@@ -112,21 +105,22 @@ panelLabel id' class' label =
   div [ id id' ] [ h2 [ class class'  ] [ text label ] ]
 
 
-blinkClass : Player -> Player -> String
-blinkClass player turn =
+blinkTurn : Player -> Player -> String
+blinkTurn player turn =
    if ( player == turn ) then "blink" else "no-blink"
 
 
 renderScorePanel : Model -> Html
 renderScorePanel model  =
-  let scores = (.scores model)
-      player = whoseTurn (.state model)
+  let state = (.state model)
+      scores = (.scores model)
+      player = whoseTurn state
   in
     div [ id "panel" ]
-          [ panelLabel "nought" ( blinkClass O player) "O"
+          [ panelLabel "nought" ( blinkTurn O player) "O"
           , panelLabel "tie" "no_blink" "Tie"
-          , panelLabel "cross" ( blinkClass  X player ) "X"
-          , renderScores scores
+          , panelLabel "cross" ( blinkTurn  X player ) "X"
+          , renderScores state scores
           ]
 
 

@@ -26,7 +26,7 @@ module.exports = function(grunt) {
     },
     watch: {
       elm: {
-        files: ["TicTacToe.elm"],
+        files: ["TicTacToeModel.elm", "TicTacToe.elm"],
         tasks: ["elm"]
       },
       jade: { 
