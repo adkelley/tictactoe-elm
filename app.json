@@ -3,7 +3,7 @@
     "repository": "https://github.com/adkelley/tictactoe-elm",
     "env": {
         "BUILDPACK_URL": "https://github.com/srid/heroku-buildpack-elm.git",
-        "ELM_COMPILE": "elm make Todo.elm",
+        "ELM_COMPILE": "elm make TicTacToe.elm",
         "ELM_STATIC_DIR": "."
     }
 }
