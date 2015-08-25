@@ -1,4 +1,7 @@
 # Tic-Tac-Toe in Elm
+----------------------
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
 A Tic-Tac-Toe game in the browser implemented in the [Elm Programming Language](http://elm-lang.org) 
 
 For a comparison see my [implementation](https://github.com/Project_1_TTT) in Javascript 
