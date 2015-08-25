@@ -12424,7 +12424,7 @@ Elm.TTTModel.make = function (_elm) {
                   {case "_Tuple2":
                      return _U.eq(_v0._1,1);}
                   _U.badCase($moduleName,
-                  "on line 99, column 32 to 40");
+                  "on line 106, column 32 to 40");
                }();
             },
             moves) || (A2($List.all,
@@ -12434,7 +12434,7 @@ Elm.TTTModel.make = function (_elm) {
                   {case "_Tuple2":
                      return _U.eq(_v4._1,2);}
                   _U.badCase($moduleName,
-                  "on line 100, column 32 to 40");
+                  "on line 107, column 32 to 40");
                }();
             },
             moves) || (A2($List.all,
@@ -12444,7 +12444,7 @@ Elm.TTTModel.make = function (_elm) {
                   {case "_Tuple2":
                      return _U.eq(_v8._1,3);}
                   _U.badCase($moduleName,
-                  "on line 101, column 32 to 40");
+                  "on line 108, column 32 to 40");
                }();
             },
             moves) || (A2($List.all,
@@ -12454,7 +12454,7 @@ Elm.TTTModel.make = function (_elm) {
                   {case "_Tuple2":
                      return _U.eq(_v12._0,1);}
                   _U.badCase($moduleName,
-                  "on line 102, column 32 to 40");
+                  "on line 109, column 32 to 40");
                }();
             },
             moves) || (A2($List.all,
@@ -12464,7 +12464,7 @@ Elm.TTTModel.make = function (_elm) {
                   {case "_Tuple2":
                      return _U.eq(_v16._0,2);}
                   _U.badCase($moduleName,
-                  "on line 103, column 32 to 40");
+                  "on line 110, column 32 to 40");
                }();
             },
             moves) || (A2($List.all,
@@ -12474,7 +12474,7 @@ Elm.TTTModel.make = function (_elm) {
                   {case "_Tuple2":
                      return _U.eq(_v20._0,3);}
                   _U.badCase($moduleName,
-                  "on line 104, column 32 to 40");
+                  "on line 111, column 32 to 40");
                }();
             },
             moves) || (A2($List.all,
@@ -12484,7 +12484,7 @@ Elm.TTTModel.make = function (_elm) {
                   {case "_Tuple2":
                      return _U.eq(_v24._1,_v24._0);}
                   _U.badCase($moduleName,
-                  "on line 105, column 34 to 44");
+                  "on line 112, column 34 to 44");
                }();
             },
             moves) || A2($List.all,
@@ -12495,7 +12495,7 @@ Elm.TTTModel.make = function (_elm) {
                      return _U.eq(_v28._1 + _v28._0,
                        4);}
                   _U.badCase($moduleName,
-                  "on line 106, column 34 to 48");
+                  "on line 113, column 34 to 48");
                }();
             },
             moves)))))));
@@ -12507,7 +12507,7 @@ Elm.TTTModel.make = function (_elm) {
                   {case "_Tuple2":
                      return _U.eq(_v32._1,player);}
                   _U.badCase($moduleName,
-                  "on line 109, column 43 to 54");
+                  "on line 116, column 43 to 54");
                }();
             }))($List.filter(function (x) {
                return _U.eq($List.length(x),
@@ -12524,7 +12524,7 @@ Elm.TTTModel.make = function (_elm) {
             case "UnFinishedGame":
             return state._1;}
          _U.badCase($moduleName,
-         "between lines 66 and 68");
+         "between lines 73 and 75");
       }();
    };
    var getMove = F2(function (state,
@@ -12538,7 +12538,7 @@ Elm.TTTModel.make = function (_elm) {
                {case "_Tuple2":
                   return _U.eq(_v41._0,position);}
                _U.badCase($moduleName,
-               "on line 75, column 55 to 76");
+               "on line 82, column 55 to 76");
             }();
          },
          moves));
@@ -12585,7 +12585,7 @@ Elm.TTTModel.make = function (_elm) {
                    points);}
               break;}
          _U.badCase($moduleName,
-         "between lines 50 and 56");
+         "between lines 57 and 63");
       }();
    });
    var Model = F2(function (a,b) {
@@ -12619,14 +12619,14 @@ Elm.TTTModel.make = function (_elm) {
    };
    var Draw = {ctor: "Draw"};
    var X = {ctor: "X"};
-   var newModel = {_: {}
-                  ,points: {_: {}
-                           ,o: 0
-                           ,ties: 0
-                           ,x: 0}
-                  ,state: A2(UnFinishedGame,
-                  X,
-                  _L.fromArray([]))};
+   var resetModel = {_: {}
+                    ,points: {_: {}
+                             ,o: 0
+                             ,ties: 0
+                             ,x: 0}
+                    ,state: A2(UnFinishedGame,
+                    X,
+                    _L.fromArray([]))};
    var O = {ctor: "O"};
    var turn = function (state) {
       return function () {
@@ -12636,8 +12636,8 @@ Elm.TTTModel.make = function (_elm) {
               {case "Draw": return X;
                  case "Winner":
                  switch (state._0._0.ctor)
-                   {case "O": return X;
-                      case "X": return O;}
+                   {case "O": return O;
+                      case "X": return X;}
                    break;}
               break;
             case "UnFinishedGame":
@@ -12646,7 +12646,7 @@ Elm.TTTModel.make = function (_elm) {
                  case "X": return X;}
               break;}
          _U.badCase($moduleName,
-         "between lines 118 and 124");
+         "between lines 125 and 131");
       }();
    };
    var other = function (player) {
@@ -12655,7 +12655,19 @@ Elm.TTTModel.make = function (_elm) {
          {case "O": return X;
             case "X": return O;}
          _U.badCase($moduleName,
-         "between lines 129 and 131");
+         "between lines 136 and 138");
+      }();
+   };
+   var nextGame = function (model) {
+      return function () {
+         var player = other(turn(function (_) {
+            return _.state;
+         }(model)));
+         return _U.replace([["state"
+                            ,A2(UnFinishedGame,
+                            player,
+                            _L.fromArray([]))]],
+         model);
       }();
    };
    var addMove = F2(function (model,
@@ -12706,7 +12718,8 @@ Elm.TTTModel.make = function (_elm) {
                           ,FinishedGame: FinishedGame
                           ,UnFinishedGame: UnFinishedGame
                           ,Model: Model
-                          ,newModel: newModel
+                          ,resetModel: resetModel
+                          ,nextGame: nextGame
                           ,newScore: newScore
                           ,isLegalMove: isLegalMove
                           ,getMoves: getMoves
@@ -13096,7 +13109,7 @@ Elm.TicTacToe.make = function (_elm) {
    _L.fromArray([$Html$Attributes.id("footer")]),
    _L.fromArray([A2($Html.a,
    _L.fromArray([$Html$Attributes.href("https://github.com/adkelley")]),
-   _L.fromArray([$Html.text("view github repository")]))]));
+   _L.fromArray([$Html.text("2015 - Alex Kelley")]))]));
    var blinkTurn = F2(function (player,
    turn) {
       return _U.eq(player,
@@ -13111,31 +13124,10 @@ Elm.TicTacToe.make = function (_elm) {
       _L.fromArray([$Html$Attributes.$class(class$)]),
       _L.fromArray([$Html.text(label)]))]));
    });
-   var renderScore = F2(function (blink,
-   score) {
+   var renderScore = function (score) {
       return A2($Html.li,
-      _L.fromArray([$Html$Attributes.$class(blink)]),
+      _L.fromArray([]),
       _L.fromArray([$Html.text($Basics.toString(score))]));
-   });
-   var blinkWinner = function (state) {
-      return function () {
-         var player = $TTTModel.other($TTTModel.turn(state));
-         return function () {
-            switch (state.ctor)
-            {case "FinishedGame":
-               switch (state._0.ctor)
-                 {case "Draw": return "blink";
-                    case "Winner":
-                    switch (state._0._0.ctor)
-                      {case "O": return _U.eq(player,
-                           $TTTModel.O) ? "blink" : "no-blink";
-                         case "X": return _U.eq(player,
-                           $TTTModel.X) ? "blink" : "no-blink";}
-                      break;}
-                 break;}
-            return "no-blink";
-         }();
-      }();
    };
    var renderScores = F2(function (state,
    points) {
@@ -13143,15 +13135,9 @@ Elm.TicTacToe.make = function (_elm) {
       _L.fromArray([$Html$Attributes.id("score")]),
       _L.fromArray([A2($Html.ul,
       _L.fromArray([]),
-      _L.fromArray([A2(renderScore,
-                   blinkWinner(state),
-                   points.o)
-                   ,A2(renderScore,
-                   blinkWinner(state),
-                   points.ties)
-                   ,A2(renderScore,
-                   blinkWinner(state),
-                   points.x)]))]));
+      _L.fromArray([renderScore(points.o)
+                   ,renderScore(points.ties)
+                   ,renderScore(points.x)]))]));
    });
    var renderScorePanel = function (model) {
       return function () {
@@ -13172,7 +13158,7 @@ Elm.TicTacToe.make = function (_elm) {
                       "O")
                       ,A3(panelLabel,
                       "tie",
-                      "no_blink",
+                      "no-blink",
                       "Tie")
                       ,A3(panelLabel,
                       "cross",
@@ -13199,13 +13185,16 @@ Elm.TicTacToe.make = function (_elm) {
             return $Debug.log("Add move")(A2($TTTModel.addMove,
               model,
               action._0));
+            case "Next":
+            return $TTTModel.nextGame(model);
             case "NoOp": return model;
             case "Reset":
-            return $TTTModel.newModel;}
+            return $TTTModel.resetModel;}
          _U.badCase($moduleName,
-         "between lines 25 and 35");
+         "between lines 26 and 40");
       }();
    });
+   var Next = {ctor: "Next"};
    var AddMove = function (a) {
       return {ctor: "AddMove"
              ,_0: a};
@@ -13214,10 +13203,33 @@ Elm.TicTacToe.make = function (_elm) {
    model,
    position) {
       return function () {
-         var move = A2($TTTModel.getMove,
-         function (_) {
+         var state = function (_) {
             return _.state;
-         }(model),
+         }(model);
+         var blinkX = function () {
+            switch (state.ctor)
+            {case "FinishedGame":
+               switch (state._0.ctor)
+                 {case "Winner":
+                    switch (state._0._0.ctor)
+                      {case "X": return "blink";}
+                      break;}
+                 break;}
+            return "no-blink";
+         }();
+         var blinkO = function () {
+            switch (state.ctor)
+            {case "FinishedGame":
+               switch (state._0.ctor)
+                 {case "Winner":
+                    switch (state._0._0.ctor)
+                      {case "O": return "blink";}
+                      break;}
+                 break;}
+            return "no-blink";
+         }();
+         var move = A2($TTTModel.getMove,
+         state,
          position);
          var class$ = function () {
             switch (move.ctor)
@@ -13225,8 +13237,14 @@ Elm.TicTacToe.make = function (_elm) {
                switch (move._0.ctor)
                  {case "_Tuple2":
                     switch (move._0._1.ctor)
-                      {case "O": return "nought";
-                         case "X": return "cross";}
+                      {case "O":
+                         return A2($Basics._op["++"],
+                           blinkO,
+                           " nought");
+                         case "X":
+                         return A2($Basics._op["++"],
+                           blinkX,
+                           " cross");}
                       break;}
                  break;}
             return "empty";
@@ -13290,10 +13308,16 @@ Elm.TicTacToe.make = function (_elm) {
                                 address,
                                 Reset)]),
                    _L.fromArray([$Html.text("Reset")]))
+                   ,A2($Html.button,
+                   _L.fromArray([$Html$Attributes.id("next-game")
+                                ,A2($Html$Events.onClick,
+                                address,
+                                Next)]),
+                   _L.fromArray([$Html.text("Next Game")]))
                    ,pageFooter]));
    });
    var main = $StartApp.start({_: {}
-                              ,model: $TTTModel.newModel
+                              ,model: $TTTModel.resetModel
                               ,update: update
                               ,view: view});
    var NoOp = {ctor: "NoOp"};
@@ -13301,12 +13325,12 @@ Elm.TicTacToe.make = function (_elm) {
                            ,NoOp: NoOp
                            ,Reset: Reset
                            ,AddMove: AddMove
+                           ,Next: Next
                            ,update: update
                            ,title: title
                            ,pageHeader: pageHeader
                            ,renderSquare: renderSquare
                            ,newGameBoard: newGameBoard
-                           ,blinkWinner: blinkWinner
                            ,renderScore: renderScore
                            ,renderScores: renderScores
                            ,panelLabel: panelLabel

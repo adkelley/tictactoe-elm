@@ -37,12 +37,19 @@ type alias Model =
 
 -- Model
 -- X always goes first. Todo: randomly pick first player 
-newModel : Model
-newModel =
+resetModel : Model
+resetModel =
   {
     points = { ties = 0, x = 0, o = 0 },
     state = UnFinishedGame X []
   }
+
+
+nextGame : Model -> Model
+nextGame model =
+  let player = other <| turn (.state model)
+  in
+    { model | state <- (UnFinishedGame player []) }
 
 
 newScore : Score -> Result -> Score
@@ -118,8 +125,8 @@ turn state =
   case state of
     (UnFinishedGame X _) -> X
     (UnFinishedGame O _) -> O
-    (FinishedGame (Winner X) _) -> O
-    (FinishedGame (Winner O) _) -> X
+    (FinishedGame (Winner X) _) -> X
+    (FinishedGame (Winner O) _) -> O
     (FinishedGame Draw _) -> X
                                
 

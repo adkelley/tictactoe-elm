@@ -18,6 +18,7 @@ type Action
   = NoOp
   | Reset
   | AddMove Position
+  | Next
 
 
 update : Action -> Model -> Model
@@ -27,10 +28,14 @@ update action model =
       model
       
     Reset ->
-      newModel
+      resetModel
 
     AddMove position ->
-      addMove model position |> Debug.log "Add move" 
+      addMove model position |> Debug.log "Add move"
+        
+    Next ->
+      nextGame model
+      
       
           
 
@@ -47,17 +52,23 @@ pageHeader =
   h1 [ id "header" ] [ title "tic-tac-toe" ]
 
 
-
 renderSquare : Address Action -> Model -> Position -> Html
 renderSquare address model position =
-  let move = getMove (.state model) position
+  let state = (.state model)
+      blinkX = case state of
+                 (FinishedGame (Winner X) _) -> "blink"
+                 otherwise -> "no-blink"
+      blinkO = case state of
+                 (FinishedGame (Winner O) _) -> "blink"
+                 otherwise -> "no-blink"
+      move = getMove state position
       class' = case move of
-                      Just (_, X) -> "cross"
-                      Just (_, O) -> "nought"
+                      Just (_, X) -> blinkX ++ " cross"
+                      Just (_, O) -> blinkO ++ " nought"
                       otherwise -> "empty"
       text' = case move of
-                  Just (_, O) -> "O"
                   Just (_, X) -> "X"
+                  Just (_, O) -> "O"
                   otherwise -> " "
   in
     div [ class "square"
@@ -73,19 +84,9 @@ newGameBoard address model =
     div [ id "board" ] (List.map (renderSquare address model) board)
 
 
-blinkWinner : GameState -> String
-blinkWinner state =
-  let player = other (turn state)
-  in
-   case state of
-     (FinishedGame (Winner X) _) -> if player == X then "blink" else "no-blink"
-     (FinishedGame (Winner O) _) -> if player == O then "blink" else "no-blink"
-     (FinishedGame Draw _) -> "blink"
-     otherwise -> "no-blink"
-
-renderScore : String -> Int -> Html
-renderScore blink score =
-  li [ class blink ]
+renderScore : Int -> Html
+renderScore score =
+  li [ ]
      [ text ( toString score ) ]
 
 
@@ -93,9 +94,9 @@ renderScores : GameState -> Score -> Html
 renderScores state points =
   div [ id "score" ]
       [ ul [  ]
-         [ renderScore (blinkWinner state) points.o
-         , renderScore (blinkWinner state) points.ties
-         , renderScore (blinkWinner state) points.x
+         [ renderScore points.o
+         , renderScore points.ties
+         , renderScore points.x
          ]
       ]
     
@@ -118,7 +119,7 @@ renderScorePanel model  =
   in
     div [ id "panel" ]
           [ panelLabel "nought" ( blinkTurn O player) "O"
-          , panelLabel "tie" "no_blink" "Tie"
+          , panelLabel "tie" "no-blink" "Tie"
           , panelLabel "cross" ( blinkTurn  X player ) "X"
           , renderScores state points
           ]
@@ -128,8 +129,9 @@ pageFooter : Html
 pageFooter =
   footer [ id "footer"  ]
     [ a [ href "https://github.com/adkelley" ]
-        [ text "view github repository" ]
+          [ text "2015 - Alex Kelley" ]
     ]
+    
     
 
 view : Address Action -> Model -> Html
@@ -140,6 +142,8 @@ view address model =
         , renderScorePanel model
         , button
           [ id "reset", onClick address Reset ] [ text "Reset" ]
+        , button
+          [ id "next-game", onClick address Next ] [ text "Next Game" ]
         , pageFooter
         ]
     
@@ -147,7 +151,7 @@ view address model =
 main =
   StartApp.start
   {
-    model = newModel,
+    model = resetModel,
     view = view,
     update = update
   }
