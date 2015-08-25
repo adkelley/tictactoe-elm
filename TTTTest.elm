@@ -9,19 +9,20 @@ import ElmTest.Runner.Element exposing (runDisplay)
 
 import TTTModel exposing (..)
 
-addRow : Model -> Int -> Int -> Player -> Model
-addRow model row col player =
+addRow : Model -> Int -> Int -> Model
+addRow model row col =
   case col of
     4 -> model
     otherwise ->
-      addRow (addMove model ((row, col), player)) row (col+1) player 
+      addRow ((addMove model (row, col)) row (col+1)
+                       
 
-addCol : Model -> Int -> Int -> Player -> Model
-addCol model row col player =
+addCol : Model -> Int -> Int -> Model
+addCol model row col =
   case row of
     4 -> model
     otherwise ->
-      addCol (addMove model ((row, col), player)) (row+1) col player 
+      addCol (addMove model (row, col)) (row+1) col
 
 tests : Test
 tests = suite "TicTacToe Model Test Suite"
@@ -30,19 +31,19 @@ tests = suite "TicTacToe Model Test Suite"
                                 { points = { ties = 0, x = 0, o = 0 },
                                   state = UnFinishedGame X [] } )
         , test "Row Winner" (assertEqual
-                             (addRow newModel 1 1 X)
+                             (addRow newModel 1 1)
                              { points = { ties = 0, x = 1, o = 0 },
                                state = FinishedGame (Winner X) [((1,3), X), ((1,2), X), ((1,1), X)] })
         , test "Col Winner" (assertEqual
-                             (addCol newModel 1 1 O)
+                             (addCol newModel 1 1)
                              { points = { ties = 0, x = 0, o = 1 },
-                               state = FinishedGame (Winner O) [((3,1), O), ((2,1), O), ((1,1), O)] })
+                               state = FinishedGame (Winner X) [((3,1), X), ((2,1), X), ((1,1), X)] })
         , test "Draw"       (assertEqual
                              (addMove (addMove (addMove
                                 (addMove (addMove (addMove
                                    (addMove (addMove (addMove
                                                       newModel
-                                                      ((1,1),X)) ((1,2),O)) ((1,3),X))
+                                                      (1,1) (1,2) (1,3))
                                                       ((2,1),X)) ((2,2),O)) ((2,3),O))
                                                       ((3,1),O)) ((3,2),X)) ((3,3),X))
 

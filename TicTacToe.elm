@@ -11,7 +11,7 @@ import Debug exposing (..)
 import Signal exposing ( Address )
 import StartApp
 
-import TTModel exposing (..)
+import TTTModel exposing (..)
 
 -- Update
 type Action
@@ -30,7 +30,7 @@ update action model =
       newModel
 
     AddMove position ->
-      addMove model (position, turn)
+      addMove model position |> Debug.log "Add move" 
       
           
 
@@ -48,34 +48,34 @@ pageHeader =
 
 
 
-renderSquare : Address Action -> Model -> (Position, Player) -> Html
-renderSquare address (position, player) =
-  let square = if 
+renderSquare : Address Action -> Model -> Position -> Html
+renderSquare address model position =
+  let move = getMove (.state model) position
+      class' = case move of
+                      Just (_, X) -> "cross"
+                      Just (_, O) -> "nought"
+                      otherwise -> "empty"
+      text' = case move of
+                  Just (_, O) -> "O"
+                  Just (_, X) -> "X"
+                  otherwise -> " "
+  in
     div [ class "square"
         , onClick address ( AddMove position  )
         ]
-    [ p [ class ( case  of
-                    Just O  -> "nought"
-                    Just X  -> "cross"
-                    Just Blank  -> "empty" )
-        ]
-      [ text ( case move of
-                 Just O -> "O"
-                 Just X -> "X"
-                 Just Blank -> " " )
-      ]
-    ]
+    [ p [ class class' ] [ text text' ]  ]
 
 
-renderGameBoard : Address Action -> Model -> Html
-renderGameBoard address model =
-  let board = getBoard (.state model)
-  div [ id "board"  ] 
+newGameBoard : Address Action -> Model -> Html
+newGameBoard address model =
+  let board = [(1,1),(1,2),(1,3),(2,1),(2,2),(2,3),(3,1),(3,2),(3,3)]
+  in
+    div [ id "board" ] (List.map (renderSquare address model) board)
 
 
 blinkWinner : GameState -> String
 blinkWinner state =
-  let player = otherPlayer (whoseTurn state)
+  let player = other (turn state)
   in
    case state of
      (FinishedGame (Winner X) _) -> if player == X then "blink" else "no-blink"
@@ -89,13 +89,13 @@ renderScore blink score =
      [ text ( toString score ) ]
 
 
-renderScores : GameState -> Scores -> Html
-renderScores state scores =
+renderScores : GameState -> Score -> Html
+renderScores state points =
   div [ id "score" ]
       [ ul [  ]
-         [ renderScore (blinkWinner state) scores.nought
-         , renderScore (blinkWinner state) scores.ties
-         , renderScore (blinkWinner state) scores.cross
+         [ renderScore (blinkWinner state) points.o
+         , renderScore (blinkWinner state) points.ties
+         , renderScore (blinkWinner state) points.x
          ]
       ]
     
@@ -113,14 +113,14 @@ blinkTurn player turn =
 renderScorePanel : Model -> Html
 renderScorePanel model  =
   let state = (.state model)
-      scores = (.scores model)
-      player = whoseTurn state
+      points = (.points model)
+      player = turn state
   in
     div [ id "panel" ]
           [ panelLabel "nought" ( blinkTurn O player) "O"
           , panelLabel "tie" "no_blink" "Tie"
           , panelLabel "cross" ( blinkTurn  X player ) "X"
-          , renderScores state scores
+          , renderScores state points
           ]
 
 
@@ -136,7 +136,7 @@ view : Address Action -> Model -> Html
 view address model =
   div [ id "container" ]
         [ pageHeader
-        , renderGameBoard  address model
+        , newGameBoard  address model
         , renderScorePanel model
         , button
           [ id "reset", onClick address Reset ] [ text "Reset" ]
@@ -147,7 +147,7 @@ view address model =
 main =
   StartApp.start
   {
-    model = initModel,
+    model = newModel,
     view = view,
     update = update
   }

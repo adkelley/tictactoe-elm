@@ -59,7 +59,7 @@ newScore points result =
 isLegalMove : Moves -> Position -> Bool
 isLegalMove moves position =
   List.all (\move -> not (fst move == position)) moves
-  
+    
 
 getMoves : GameState -> Moves
 getMoves state =
@@ -68,12 +68,20 @@ getMoves state =
     (FinishedGame _ moves) -> moves
 
 
-addMove : Model -> Move -> Model
-addMove model move =
-   let moves = (getMoves (.state model))
-       newMoves = if | isLegalMove moves (fst move) -> move :: moves 
+getMove : GameState -> Position -> Maybe Move
+getMove state position =
+  let moves = getMoves state
+  in
+    List.head <| List.filter (\(position', player) -> position' == position) moves
+
+  
+addMove : Model -> Position -> Model
+addMove model position =
+   let state = (.state model)
+       moves = getMoves state
+       player = turn state
+       newMoves = if | isLegalMove moves position -> (position, player) :: moves 
                      | otherwise -> moves
-       player = snd move
    in
      if | playerWon player newMoves ->
           { model |  state <- (FinishedGame (Winner player) newMoves)
