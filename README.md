@@ -13,4 +13,4 @@ For a comparison see my [implementation](https://github.com/Project_1_TTT) in Ja
 4. Open **index.html** in your favorite browser
 
 ## Deployment
-[heroku](https://evening-peak-6781.herokuapp.com)
+[heroku](https://polar-oasis-5892.herokuapp.com)
