@@ -79,7 +79,8 @@ renderSquare address model position =
 
 newGameBoard : Address Action -> Model -> Html
 newGameBoard address model =
-  let board = [(1,1),(1,2),(1,3),(2,1),(2,2),(2,3),(3,1),(3,2),(3,3)]
+--  let board = [(1,1),(1,2),(1,3),(2,1),(2,2),(2,3),(3,1),(3,2),(3,3)]
+  let board = List.concat <| List.map ( \i -> List.map ( \j -> ( i, j ) ) [ 1..3 ] ) [ 1..3 ]
   in
     div [ id "board" ] (List.map (renderSquare address model) board)
 
