@@ -13,4 +13,9 @@ For a comparison see my [implementation](https://github.com/Project_1_TTT) in Ja
 4. Open **index.html** in your favorite browser
 
 ## Deployment
-[heroku](https://polar-oasis-5892.herokuapp.com)
+To deploy to Heroku manually, you'll need to set the BuildPack and config points:
+1. heroku config:set BUILDPACK_URL=https://github.com/srid/heroku-buildpack-elm.git
+2. heroku config:set ELM_COMPILE="elm make TicTacToe.elm"
+3. heroku config:set ELM_STATIC_DIR="."
+
+[heroku live deployment](https://polar-oasis-5892.herokuapp.com)
