@@ -4,7 +4,7 @@
 
 A Tic-Tac-Toe game in the browser implemented in the [Elm Programming Language](http://elm-lang.org) 
 
-For a comparison see my [implementation](https://github.com/Project_1_TTT) in Javascript 
+For an OO comparison in Javascript see my [implementation](https://github.com/Project_1_TTT)
 
 ## Build/Run
 1. Ensure that you've installed the latest [elm and its build tools](http://elm-lang.org/install)
